@@ -31,6 +31,8 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@tanstack/router-devtools": "^1.95.1",
+    "@tanstack/router-plugin": "^1.95.1",
     "@tauri-apps/cli": "^2",
     "@types/node": "^22.10.5",
     "@types/react": "^18.3.1",
