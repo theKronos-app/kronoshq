@@ -151,3 +151,112 @@ sequenceDiagram
 2. **Horizontal Scaling**
    - Actors can be distributed (future consideration)
    - Independent state allows for easy distribution
+
+## Actor Types and Decision Making
+
+### Types of Actors
+
+XState provides several types of actors, each suited for different use cases:
+
+1. **State Machine Actors** (`createMachine`)
+   - Complex state management
+   - Multiple states and transitions
+   - State history needed
+   ```typescript
+   const editorActor = createMachine({
+     states: {
+       idle: {},
+       editing: {},
+       saving: {}
+     }
+   });
+   ```
+
+2. **Promise Actors** (`fromPromise`)
+   - One-time async operations
+   - Simple data fetching
+   - File operations
+   ```typescript
+   const noteLoader = fromPromise(async ({ noteId }) => {
+     return await db.getNoteById(noteId);
+   });
+   ```
+
+3. **Observable Actors** (`fromObservable`)
+   - Continuous data streams
+   - Real-time updates
+   - WebSocket connections
+   ```typescript
+   const aiSuggestions = fromObservable(() => {
+     return new Observable((subscriber) => {
+       // AI processing stream
+     });
+   });
+   ```
+
+4. **Transition Actors** (`fromTransition`)
+   - Simple event transformations
+   - Input processing
+   - When state machines are overkill
+   ```typescript
+   const searchActor = fromTransition((state, event) => {
+     if (event.type === 'SEARCH') {
+       return { query: event.value };
+     }
+   });
+   ```
+
+5. **Event Observable Actors** (`fromEventObservable`)
+   - DOM events
+   - System events
+   - Hardware events
+   ```typescript
+   const keyboardActor = fromEventObservable(() => 
+     fromEvent(document, 'keydown')
+   );
+   ```
+
+6. **Callback Actors** (`fromCallback`)
+   - Legacy callback APIs
+   - Node.js events
+   - Cleanup requirements
+   ```typescript
+   const fsWatcherActor = fromCallback(({ sendBack }) => {
+     const watcher = fs.watch('./notes', (event, filename) => {
+       sendBack({ type: 'FILE_CHANGED', filename });
+     });
+     return () => watcher.close();
+   });
+   ```
+
+### Decision Flow
+
+```mermaid
+graph TD
+    A[New Actor Needed] --> B{Complex State?}
+    B -->|Yes| C[createMachine]
+    B -->|No| D{Async Operation?}
+    D -->|One-time| E[fromPromise]
+    D -->|Stream| F[fromObservable]
+    D -->|Transform| G[fromTransition]
+    D -->|System Events| H[fromEventObservable]
+    D -->|Callbacks| I[fromCallback]
+```
+
+### Actor Usage in Kronos
+
+#### Editor System
+- **Main Editor**: `createMachine` (complex state)
+- **Content Loader**: `fromPromise` (file loading)
+- **Auto-save**: `fromObservable` (periodic saves)
+- **Input Processing**: `fromTransition` (content transforms)
+
+#### AI System
+- **AI Core**: `createMachine` (complex state)
+- **Analysis Stream**: `fromObservable` (continuous processing)
+- **Model Loading**: `fromPromise` (initial setup)
+
+#### Database System
+- **DB Core**: `createMachine` (connection state)
+- **Queries**: `fromPromise` (data operations)
+- **Change Stream**: `fromObservable` (real-time updates)
