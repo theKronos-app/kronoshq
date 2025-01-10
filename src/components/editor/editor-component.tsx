@@ -132,20 +132,20 @@ export default function EditorComponent(): JSX.Element {
 
   return (
     <>
-      {isRichText && (
+      {/* {isRichText && (
         <ToolbarPlugin
           editor={editor}
           activeEditor={activeEditor}
           setActiveEditor={setActiveEditor}
           setIsLinkEditMode={setIsLinkEditMode}
         />
-      )}
-      {isRichText && (
+      )} */}
+      {/* {isRichText && (
         <ShortcutsPlugin
           editor={activeEditor}
           setIsLinkEditMode={setIsLinkEditMode}
         />
-      )}
+      )} */}
       <div
         className={`editor-container ${showTreeView ? "tree-view" : ""} ${
           !isRichText ? "plain-text" : ""
@@ -164,11 +164,11 @@ export default function EditorComponent(): JSX.Element {
         <HashtagPlugin />
         <KeywordsPlugin />
         <SpeechToTextPlugin />
-        <AutoLinkPlugin />
+        {/* <AutoLinkPlugin />
         <CommentPlugin
           providerFactory={isCollab ? createWebsocketProvider : undefined}
-        />
-        {isRichText ? (
+        /> */}
+        {/* {isRichText ? (
           <>
             {isCollab ? (
               <CollaborationPlugin
@@ -188,19 +188,19 @@ export default function EditorComponent(): JSX.Element {
                 </div>
               }
               ErrorBoundary={LexicalErrorBoundary}
-            />
+            /> */}
             <MarkdownShortcutPlugin />
-            <CodeHighlightPlugin />
-            <ListPlugin />
-            <CheckListPlugin />
-            <ListMaxIndentLevelPlugin maxDepth={7} />
-            <TablePlugin
+            {/* <CodeHighlightPlugin /> */}
+            {/* <ListPlugin /> */}
+            {/* <CheckListPlugin /> */}
+            {/* <ListMaxIndentLevelPlugin maxDepth={7} /> */}
+            {/* <TablePlugin
               hasCellMerge={tableCellMerge}
               hasCellBackgroundColor={tableCellBackgroundColor}
               hasHorizontalScroll={tableHorizontalScroll}
-            />
-            <TableCellResizer />
-            <ImagesPlugin />
+            /> */}
+            {/* <TableCellResizer /> */}
+            {/* <ImagesPlugin />
             <InlineImagePlugin />
             <LinkPlugin hasLinkAttributes={hasLinkAttributes} />
             <PollPlugin />
@@ -212,11 +212,11 @@ export default function EditorComponent(): JSX.Element {
             <EquationsPlugin />
             <ExcalidrawPlugin />
             <TabFocusPlugin />
-            <TabIndentationPlugin />
-            <CollapsiblePlugin />
+            <TabIndentationPlugin /> */}
+            {/* <CollapsiblePlugin />
             <PageBreakPlugin />
-            <LayoutPlugin />
-            {floatingAnchorElem && !isSmallWidthViewport && (
+            <LayoutPlugin /> */}
+            {/* {floatingAnchorElem && !isSmallWidthViewport && (
               <>
                 <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
                 <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
@@ -259,9 +259,9 @@ export default function EditorComponent(): JSX.Element {
         <ActionsPlugin
           isRichText={isRichText}
           shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
-        />
-      </div>
-      {showTreeView && <TreeViewPlugin />}
+        /> */}
+      </div> 
+      {/* {showTreeView && <TreeViewPlugin />} */}
     </>
   );
 }

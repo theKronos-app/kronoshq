@@ -56,7 +56,7 @@ function Journal() {
   //   font-weight: 400;
   // }
   return (
-    <div className="p-2">
+    <div className="p-2 border">
       <FlashMessageContext>
         <SettingsContext>
           <LexicalComposer initialConfig={initialConfig}>
