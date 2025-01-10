@@ -121,6 +121,7 @@ import {
   formatParagraph,
   formatQuote,
 } from "./utils";
+import { LinkDialog } from "./link-dialog";
 
 const rootTypeToRootName = {
   root: "Root",
@@ -770,179 +771,168 @@ export default function ToolbarPlugin({
   const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
 
   return (
-    <div className="flex mb-px bg-white p-1 rounded-t-[10px] items-center overflow-x-auto h-9 sticky top-0 z-2">
-      <Button
-        disabled={!toolbarState.canUndo || !isEditable}
-        onClick={() => {
-          activeEditor.dispatchCommand(UNDO_COMMAND, undefined);
-        }}
-        title={IS_APPLE ? "Undo (⌘Z)" : "Undo (Ctrl+Z)"}
-        variant="ghost"
-        size="icon"
-        className={cn("flex-shrink-0", !isEditable && "opacity-50")}
-        aria-label="Undo"
-      >
-        <Undo2 className="h-4 w-4" />
-      </Button>
-      <Button
-        disabled={!toolbarState.canRedo || !isEditable}
-        onClick={() => {
-          activeEditor.dispatchCommand(REDO_COMMAND, undefined);
-        }}
-        title={IS_APPLE ? "Redo (⇧⌘Z)" : "Redo (Ctrl+Y)"}
-        variant="ghost"
-        size="icon"
-        className={cn("flex-shrink-0", !isEditable && "opacity-50")}
-        aria-label="Redo"
-      >
-        <Redo2 className="h-4 w-4" />
-      </Button>
-      <Divider />
-      {toolbarState.blockType in blockTypeToBlockName &&
-        activeEditor === editor && (
-          <>
-            <BlockFormatDropDown
-              disabled={!isEditable}
-              blockType={toolbarState.blockType}
-              rootType={toolbarState.rootType}
-              editor={activeEditor}
-            />
-            <Divider />
-          </>
-        )}
-      {toolbarState.blockType === "code" ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            asChild
-            disabled={!isEditable}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "flex items-center gap-1 h-8",
-                !isEditable && "opacity-50"
-              )}
-            >
-              {getLanguageFriendlyName(toolbarState.codeLanguage)}
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuGroup>
-              {CODE_LANGUAGE_OPTIONS.map(([value, name]) => (
-                <DropdownMenuItem
-                  key={value}
-                  onClick={() => onCodeLanguageSelect(value)}
-                  className={cn(value === toolbarState.codeLanguage && "bg-accent")}
-                >
-                  <span>{name}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        <>
-          <FontDropDown
-            disabled={!isEditable}
-            style={"font-family"}
-            value={toolbarState.fontFamily}
-            editor={activeEditor}
-          />
-          <Divider />
-          <FontSize
-            selectionFontSize={toolbarState.fontSize.slice(0, -2)}
-            editor={activeEditor}
-            disabled={!isEditable}
-          />
-          <Divider />
-          <Button
-            disabled={!isEditable}
-            onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-            }}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "flex-shrink-0",
-              toolbarState.isBold && "bg-gray-100",
-              !isEditable && "opacity-50"
-            )}
-            title={`Bold (${SHORTCUTS.BOLD})`}
-            aria-label={`Format text as bold. Shortcut: ${SHORTCUTS.BOLD}`}
-          >
-            <Bold className="h-4 w-4" />
-          </Button>
-          <Button
-            disabled={!isEditable}
-            onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
-            }}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "flex-shrink-0",
-              toolbarState.isItalic && "bg-gray-100",
-              !isEditable && "opacity-50"
-            )}
-            title={`Italic (${SHORTCUTS.ITALIC})`}
-            aria-label={`Format text as italics. Shortcut: ${SHORTCUTS.ITALIC}`}
-          >
-            <Italic className="h-4 w-4" />
-          </Button>
-          <Button
-            disabled={!isEditable}
-            onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
-            }}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "flex-shrink-0",
-              toolbarState.isUnderline && "bg-gray-100",
-              !isEditable && "opacity-50"
-            )}
-            title={`Underline (${SHORTCUTS.UNDERLINE})`}
-            aria-label={`Format text to underlined. Shortcut: ${SHORTCUTS.UNDERLINE}`}
-          >
-            <Underline className="h-4 w-4" />
-          </Button>
-          {canViewerSeeInsertCodeButton && (
-            <Button
-              disabled={!isEditable}
-              onClick={() => {
-                activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
-              }}
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "flex-shrink-0",
-                toolbarState.isCode && "bg-gray-100",
-                !isEditable && "opacity-50"
-              )}
-              title={`Insert code block (${SHORTCUTS.INSERT_CODE_BLOCK})`}
-              aria-label="Insert code block"
-            >
-              <Code className="h-4 w-4" />
-            </Button>
-          )}
-          <Button
-            disabled={!isEditable}
-            onClick={insertLink}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "flex-shrink-0",
-              toolbarState.isLink && "bg-gray-100",
-              !isEditable && "opacity-50"
-            )}
-            aria-label="Insert link"
-            title={`Insert link (${SHORTCUTS.INSERT_LINK})`}
-          >
-            <Link className="h-4 w-4" />
-          </Button>
-          {/* <DropdownColorPicker
+			<div className="flex mb-px bg-white p-1 rounded-[10px] items-center overflow-x-auto h-12 border top-0 z-2">
+				<Button
+					disabled={!toolbarState.canUndo || !isEditable}
+					onClick={() => {
+						activeEditor.dispatchCommand(UNDO_COMMAND, undefined);
+					}}
+					title={IS_APPLE ? "Undo (⌘Z)" : "Undo (Ctrl+Z)"}
+					variant="ghost"
+					size="icon"
+					className={cn("flex-shrink-0", !isEditable && "opacity-50")}
+					aria-label="Undo"
+				>
+					<Undo2 className="h-4 w-4" />
+				</Button>
+				<Button
+					disabled={!toolbarState.canRedo || !isEditable}
+					onClick={() => {
+						activeEditor.dispatchCommand(REDO_COMMAND, undefined);
+					}}
+					title={IS_APPLE ? "Redo (⇧⌘Z)" : "Redo (Ctrl+Y)"}
+					variant="ghost"
+					size="icon"
+					className={cn("flex-shrink-0", !isEditable && "opacity-50")}
+					aria-label="Redo"
+				>
+					<Redo2 className="h-4 w-4" />
+				</Button>
+				<Divider />
+				{toolbarState.blockType in blockTypeToBlockName &&
+					activeEditor === editor && (
+						<>
+							<BlockFormatDropDown
+								disabled={!isEditable}
+								blockType={toolbarState.blockType}
+								rootType={toolbarState.rootType}
+								editor={activeEditor}
+							/>
+							<Divider />
+						</>
+					)}
+				{toolbarState.blockType === "code" ? (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild disabled={!isEditable}>
+							<Button
+								variant="ghost"
+								size="sm"
+								className={cn(
+									"flex items-center gap-1 h-8",
+									!isEditable && "opacity-50",
+								)}
+							>
+								{getLanguageFriendlyName(toolbarState.codeLanguage)}
+								<ChevronDown className="h-4 w-4" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="start">
+							<DropdownMenuGroup>
+								{CODE_LANGUAGE_OPTIONS.map(([value, name]) => (
+									<DropdownMenuItem
+										key={value}
+										onClick={() => onCodeLanguageSelect(value)}
+										className={cn(
+											value === toolbarState.codeLanguage && "bg-accent",
+										)}
+									>
+										<span>{name}</span>
+									</DropdownMenuItem>
+								))}
+							</DropdownMenuGroup>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				) : (
+					<>
+						<FontDropDown
+							disabled={!isEditable}
+							style={"font-family"}
+							value={toolbarState.fontFamily}
+							editor={activeEditor}
+						/>
+						<Divider />
+						<FontSize
+							selectionFontSize={toolbarState.fontSize.slice(0, -2)}
+							editor={activeEditor}
+							disabled={!isEditable}
+						/>
+						<Divider />
+						<Button
+							disabled={!isEditable}
+							onClick={() => {
+								activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+							}}
+							variant="ghost"
+							size="icon"
+							className={cn(
+								"flex-shrink-0",
+								toolbarState.isBold && "bg-gray-100",
+								!isEditable && "opacity-50",
+							)}
+							title={`Bold (${SHORTCUTS.BOLD})`}
+							aria-label={`Format text as bold. Shortcut: ${SHORTCUTS.BOLD}`}
+						>
+							<Bold className="h-4 w-4" />
+						</Button>
+						<Button
+							disabled={!isEditable}
+							onClick={() => {
+								activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+							}}
+							variant="ghost"
+							size="icon"
+							className={cn(
+								"flex-shrink-0",
+								toolbarState.isItalic && "bg-gray-100",
+								!isEditable && "opacity-50",
+							)}
+							title={`Italic (${SHORTCUTS.ITALIC})`}
+							aria-label={`Format text as italics. Shortcut: ${SHORTCUTS.ITALIC}`}
+						>
+							<Italic className="h-4 w-4" />
+						</Button>
+						<Button
+							disabled={!isEditable}
+							onClick={() => {
+								activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+							}}
+							variant="ghost"
+							size="icon"
+							className={cn(
+								"flex-shrink-0",
+								toolbarState.isUnderline && "bg-gray-100",
+								!isEditable && "opacity-50",
+							)}
+							title={`Underline (${SHORTCUTS.UNDERLINE})`}
+							aria-label={`Format text to underlined. Shortcut: ${SHORTCUTS.UNDERLINE}`}
+						>
+							<Underline className="h-4 w-4" />
+						</Button>
+						{canViewerSeeInsertCodeButton && (
+							<Button
+								disabled={!isEditable}
+								onClick={() => {
+									activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
+								}}
+								variant="ghost"
+								size="icon"
+								className={cn(
+									"flex-shrink-0",
+									toolbarState.isCode && "bg-gray-100",
+									!isEditable && "opacity-50",
+								)}
+								title={`Insert code block (${SHORTCUTS.INSERT_CODE_BLOCK})`}
+								aria-label="Insert code block"
+							>
+								<Code className="h-4 w-4" />
+							</Button>
+						)}
+						<LinkDialog
+							editor={activeEditor}
+							isLink={toolbarState.isLink}
+							setIsLinkEditMode={setIsLinkEditMode}
+						/>
+						{/* <DropdownColorPicker
             disabled={!isEditable}
             buttonClassName="flex items-center justify-between px-2 py-1 rounded-lg hover:bg-gray-100 disabled:opacity-50"
             buttonAriaLabel="Formatting text color"
@@ -960,106 +950,135 @@ export default function ToolbarPlugin({
             onChange={onBgColorSelect}
             title="bg color"
           /> */}
-          <ElementFormatDropdown
-            disabled={!isEditable}
-            editor={activeEditor}
-            value={toolbarState.elementFormat}
-            isRTL={toolbarState.isRTL}
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              asChild
-              disabled={!isEditable}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "flex items-center gap-1 h-8",
-                  !isEditable && "opacity-50"
-                )}
-              >
-                More
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "lowercase");
-                  }}
-                  className={cn(toolbarState.isLowercase && "bg-accent")}
-                >
-                  <CaseSensitive className="h-4 w-4" />
-                  <span>Lowercase</span>
-                  <DropdownMenuShortcut>{SHORTCUTS.LOWERCASE}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "uppercase");
-                  }}
-                  className={cn(toolbarState.isUppercase && "bg-accent")}
-                >
-                  <CaseSensitive className="h-4 w-4" />
-                  <span>Uppercase</span>
-                  <DropdownMenuShortcut>{SHORTCUTS.UPPERCASE}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "capitalize");
-                  }}
-                  className={cn(toolbarState.isCapitalize && "bg-accent")}
-                >
-                  <CaseSensitive className="h-4 w-4" />
-                  <span>Capitalize</span>
-                  <DropdownMenuShortcut>{SHORTCUTS.CAPITALIZE}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
-                  }}
-                  className={cn(toolbarState.isStrikethrough && "bg-accent")}
-                >
-                  <Strikethrough className="h-4 w-4" />
-                  <span>Strikethrough</span>
-                  <DropdownMenuShortcut>{SHORTCUTS.STRIKETHROUGH}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "subscript");
-                  }}
-                  className={cn(toolbarState.isSubscript && "bg-accent")}
-                >
-                  <Subscript className="h-4 w-4" />
-                  <span>Subscript</span>
-                  <DropdownMenuShortcut>{SHORTCUTS.SUBSCRIPT}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript");
-                  }}
-                  className={cn(toolbarState.isSuperscript && "bg-accent")}
-                >
-                  <Superscript className="h-4 w-4" />
-                  <span>Superscript</span>
-                  <DropdownMenuShortcut>{SHORTCUTS.SUPERSCRIPT}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    clearFormatting(editor);
-                  }}
-                  className="flex items-center justify-between w-full px-2 py-1 hover:bg-gray-100"
-                >
-                  <PaintBucket className="h-4 w-4" />
-                  <span>Clear Formatting</span>
-                  <DropdownMenuShortcut>{SHORTCUTS.CLEAR_FORMATTING}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </>
-      )}
-    </div>
-  );
+						<ElementFormatDropdown
+							disabled={!isEditable}
+							editor={activeEditor}
+							value={toolbarState.elementFormat}
+							isRTL={toolbarState.isRTL}
+						/>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild disabled={!isEditable}>
+								<Button
+									variant="ghost"
+									size="sm"
+									className={cn(
+										"flex items-center gap-1 h-8",
+										!isEditable && "opacity-50",
+									)}
+								>
+									More
+									<ChevronDown className="h-4 w-4" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="start">
+								<DropdownMenuGroup>
+									<DropdownMenuItem
+										onClick={() => {
+											activeEditor.dispatchCommand(
+												FORMAT_TEXT_COMMAND,
+												"lowercase",
+											);
+										}}
+										className={cn(toolbarState.isLowercase && "bg-accent")}
+									>
+										<CaseSensitive className="h-4 w-4" />
+										<span>Lowercase</span>
+										<DropdownMenuShortcut>
+											{SHORTCUTS.LOWERCASE}
+										</DropdownMenuShortcut>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => {
+											activeEditor.dispatchCommand(
+												FORMAT_TEXT_COMMAND,
+												"uppercase",
+											);
+										}}
+										className={cn(toolbarState.isUppercase && "bg-accent")}
+									>
+										<CaseSensitive className="h-4 w-4" />
+										<span>Uppercase</span>
+										<DropdownMenuShortcut>
+											{SHORTCUTS.UPPERCASE}
+										</DropdownMenuShortcut>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => {
+											activeEditor.dispatchCommand(
+												FORMAT_TEXT_COMMAND,
+												"capitalize",
+											);
+										}}
+										className={cn(toolbarState.isCapitalize && "bg-accent")}
+									>
+										<CaseSensitive className="h-4 w-4" />
+										<span>Capitalize</span>
+										<DropdownMenuShortcut>
+											{SHORTCUTS.CAPITALIZE}
+										</DropdownMenuShortcut>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => {
+											activeEditor.dispatchCommand(
+												FORMAT_TEXT_COMMAND,
+												"strikethrough",
+											);
+										}}
+										className={cn(toolbarState.isStrikethrough && "bg-accent")}
+									>
+										<Strikethrough className="h-4 w-4" />
+										<span>Strikethrough</span>
+										<DropdownMenuShortcut>
+											{SHORTCUTS.STRIKETHROUGH}
+										</DropdownMenuShortcut>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => {
+											activeEditor.dispatchCommand(
+												FORMAT_TEXT_COMMAND,
+												"subscript",
+											);
+										}}
+										className={cn(toolbarState.isSubscript && "bg-accent")}
+									>
+										<Subscript className="h-4 w-4" />
+										<span>Subscript</span>
+										<DropdownMenuShortcut>
+											{SHORTCUTS.SUBSCRIPT}
+										</DropdownMenuShortcut>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => {
+											activeEditor.dispatchCommand(
+												FORMAT_TEXT_COMMAND,
+												"superscript",
+											);
+										}}
+										className={cn(toolbarState.isSuperscript && "bg-accent")}
+									>
+										<Superscript className="h-4 w-4" />
+										<span>Superscript</span>
+										<DropdownMenuShortcut>
+											{SHORTCUTS.SUPERSCRIPT}
+										</DropdownMenuShortcut>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => {
+											clearFormatting(editor);
+										}}
+										className="flex items-center justify-between w-full px-2 py-1 hover:bg-gray-100"
+									>
+										<PaintBucket className="h-4 w-4" />
+										<span>Clear Formatting</span>
+										<DropdownMenuShortcut>
+											{SHORTCUTS.CLEAR_FORMATTING}
+										</DropdownMenuShortcut>
+									</DropdownMenuItem>
+								</DropdownMenuGroup>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</>
+				)}
+			</div>
+		);
 }
