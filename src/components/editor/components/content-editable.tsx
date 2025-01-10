@@ -16,7 +16,7 @@ export default function LexicalContentEditable({
   return (
     <ContentEditable
       className={cn(
-        'border-0 text-[15px] block relative outline-none px-7 pb-10 pt-2 min-h-[150px] md:px-2',
+        'border-0 text-[15px] block relative outline-none px-7 pb-10 pt-2 min-h-[150px] md:px-2 editor-container',
         className
       )}
       aria-placeholder={placeholder}

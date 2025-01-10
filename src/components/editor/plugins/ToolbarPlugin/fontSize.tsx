@@ -6,10 +6,12 @@
  *
  */
 
-import './fontSize.css';
-
-import {LexicalEditor} from 'lexical';
+import type {LexicalEditor} from 'lexical';
 import * as React from 'react';
+import { Minus, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 import {
   MAX_ALLOWED_FONT_SIZE,
@@ -59,7 +61,6 @@ export default function FontSize({
     setInputChangeFlag(true);
     if (e.key === 'Enter' || e.key === 'Escape') {
       e.preventDefault();
-
       updateFontSizeByInputValue(inputValueNumber);
     }
   };
@@ -84,34 +85,48 @@ export default function FontSize({
     setInputChangeFlag(false);
   };
 
+  const handleIncrement = () => {
+    const currentSize = Number(inputValue) || MIN_ALLOWED_FONT_SIZE;
+    updateFontSize(editor, UpdateFontSizeType.increment, String(currentSize));
+  };
+
+  const handleDecrement = () => {
+    const currentSize = Number(inputValue) || MIN_ALLOWED_FONT_SIZE;
+    updateFontSize(editor, UpdateFontSizeType.decrement, String(currentSize));
+  };
+
   React.useEffect(() => {
     setInputValue(selectionFontSize);
   }, [selectionFontSize]);
 
   return (
-    <>
-      <button
+    <div className="flex items-center gap-1">
+      <Button
         type="button"
         disabled={
           disabled ||
           (selectionFontSize !== '' &&
             Number(inputValue) <= MIN_ALLOWED_FONT_SIZE)
         }
-        onClick={() =>
-          updateFontSize(editor, UpdateFontSizeType.decrement, inputValue)
-        }
-        className="toolbar-item font-decrement"
+        onClick={handleDecrement}
+        variant="ghost"
+        size="icon"
+        className={cn("h-8 w-8", disabled && "opacity-50")}
         aria-label="Decrease font size"
-        title={`Decrease font size (${SHORTCUTS.DECREASE_FONT_SIZE})`}>
-        <i className="format minus-icon" />
-      </button>
+        title={`Decrease font size (${SHORTCUTS.DECREASE_FONT_SIZE})`}
+      >
+        <Minus className="h-4 w-4" />
+      </Button>
 
-      <input
+      <Input
         type="number"
         title="Font size"
         value={inputValue}
         disabled={disabled}
-        className="toolbar-item font-size-input"
+        className={cn(
+          "h-8 w-14 text-center font-medium text-sm px-1",
+          disabled && "opacity-50"
+        )}
         min={MIN_ALLOWED_FONT_SIZE}
         max={MAX_ALLOWED_FONT_SIZE}
         onChange={(e) => setInputValue(e.target.value)}
@@ -119,21 +134,22 @@ export default function FontSize({
         onBlur={handleInputBlur}
       />
 
-      <button
+      <Button
         type="button"
         disabled={
           disabled ||
           (selectionFontSize !== '' &&
             Number(inputValue) >= MAX_ALLOWED_FONT_SIZE)
         }
-        onClick={() =>
-          updateFontSize(editor, UpdateFontSizeType.increment, inputValue)
-        }
-        className="toolbar-item font-increment"
+        onClick={handleIncrement}
+        variant="ghost"
+        size="icon"
+        className={cn("h-8 w-8", disabled && "opacity-50")}
         aria-label="Increase font size"
-        title={`Increase font size (${SHORTCUTS.INCREASE_FONT_SIZE})`}>
-        <i className="format add-icon" />
-      </button>
-    </>
+        title={`Increase font size (${SHORTCUTS.INCREASE_FONT_SIZE})`}
+      >
+        <Plus className="h-4 w-4" />
+      </Button>
+    </div>
   );
 }
