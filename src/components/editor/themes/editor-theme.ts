@@ -14,8 +14,8 @@ const lexicalTheme = {
   list: {
     checklist: 'relative',
     listitem: 'mx-2',
-    listitemChecked: 'relative mx-2 px-6 list-none outline-none line-through',
-    listitemUnchecked: 'relative mx-2 px-6 list-none outline-none',
+    listitemChecked: 'relative mx-2 px-6 list-none outline-none line-through listitemChecked',
+    listitemUnchecked: 'relative mx-2 px-6 list-none outline-none listitemUnchecked',
     nested: {
       listitem: 'list-none before:hidden after:hidden',
     },
