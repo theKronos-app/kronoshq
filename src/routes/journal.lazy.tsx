@@ -1,9 +1,14 @@
+import EditorComponent from '@/components/editor/editor-component'
 import { createLazyFileRoute } from '@tanstack/react-router'
 
 export const Route = createLazyFileRoute('/journal')({
-  component: About,
+  component: Journal,
 })
 
-function About() {
-  return <div className="p-2">Hello from About!</div>
+function Journal() {
+  return <div className="p-2">
+
+    <EditorComponent />
+
+  </div>
 }
