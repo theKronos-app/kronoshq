@@ -27,6 +27,7 @@ import {
   $findMatchingParent,
   $getNearestNodeOfType,
   $isEditorIsNestedEditor,
+  IS_APPLE,
   mergeRegister,
 } from "@lexical/utils";
 import {

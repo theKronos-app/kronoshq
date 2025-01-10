@@ -14,6 +14,12 @@ export default defineConfig(async () => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    "process.env": {
+      NODE_ENV: process.env.NODE_ENV || "development",
+      EXCALIDRAW_ASSET_PATH: "/",
+    },
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
