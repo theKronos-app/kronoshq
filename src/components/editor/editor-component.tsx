@@ -161,10 +161,11 @@ export default function EditorComponent(): JSX.Element {
               <DragDropPaste />
               <AutoFocusPlugin />
               {selectionAlwaysOnDisplay && <SelectionAlwaysOnDisplay />}
-              {/* <ClearEditorPlugin />
-              <ComponentPickerPlugin />
-              <EmojiPickerPlugin />
-              <AutoEmbedPlugin />
+              <ClearEditorPlugin />
+             {/* TODO: add INSERT dropdown and then refactor the ComponentPicker */}
+             {/* <ComponentPickerPlugin /> */}
+               <EmojiPickerPlugin />
+             {/*  <AutoEmbedPlugin />
               <MentionsPlugin />
               <EmojisPlugin />
               <HashtagPlugin />

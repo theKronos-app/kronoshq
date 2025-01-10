@@ -1,15 +1,6 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {
   LexicalTypeaheadMenuPlugin,
-  MenuOption,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
 import {
@@ -21,70 +12,9 @@ import {
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import * as ReactDOM from 'react-dom';
-
-class EmojiOption extends MenuOption {
-  title: string;
-  emoji: string;
-  keywords: Array<string>;
-
-  constructor(
-    title: string,
-    emoji: string,
-    options: {
-      keywords?: Array<string>;
-    },
-  ) {
-    super(title);
-    this.title = title;
-    this.emoji = emoji;
-    this.keywords = options.keywords || [];
-  }
-}
-function EmojiMenuItem({
-  index,
-  isSelected,
-  onClick,
-  onMouseEnter,
-  option,
-}: {
-  index: number;
-  isSelected: boolean;
-  onClick: () => void;
-  onMouseEnter: () => void;
-  option: EmojiOption;
-}) {
-  let className = 'item';
-  if (isSelected) {
-    className += ' selected';
-  }
-  return (
-    <li
-      key={option.key}
-      tabIndex={-1}
-      className={className}
-      ref={option.setRefElement}
-      role="option"
-      aria-selected={isSelected}
-      id={'typeahead-item-' + index}
-      onMouseEnter={onMouseEnter}
-      onClick={onClick}>
-      <span className="text">
-        {option.emoji} {option.title}
-      </span>
-    </li>
-  );
-}
-
-type Emoji = {
-  emoji: string;
-  description: string;
-  category: string;
-  aliases: Array<string>;
-  tags: Array<string>;
-  unicode_version: string;
-  ios_version: string;
-  skin_tones?: boolean;
-};
+import { cn } from '@/lib/utils';
+import { EmojiMenuItem } from './emoji-menu-item';
+import { EmojiOption, Emoji } from './types';
 
 const MAX_EMOJI_SUGGESTION_COUNT = 10;
 
@@ -170,8 +100,12 @@ export default function EmojiPickerPlugin() {
 
         return anchorElementRef.current && options.length
           ? ReactDOM.createPortal(
-              <div className="typeahead-popover emoji-menu">
-                <ul>
+              <div className={cn(
+                "fixed bg-background rounded-lg shadow-lg border",
+                "max-h-[200px] overflow-y-auto",
+                "scrollbar-none"
+              )}>
+                <ul className="p-0 m-0 list-none">
                   {options.map((option: EmojiOption, index) => (
                     <EmojiMenuItem
                       key={option.key}
