@@ -165,9 +165,10 @@ export default function EditorComponent(): JSX.Element {
              {/* TODO: add INSERT dropdown and then refactor the ComponentPicker */}
              {/* <ComponentPickerPlugin /> */}
                <EmojiPickerPlugin />
-             {/*  <AutoEmbedPlugin />
-              <MentionsPlugin />
-              <EmojisPlugin />
+               <EmojisPlugin />
+               {/* <AutoEmbedPlugin /> */}
+             {/* <MentionsPlugin />
+            
               <HashtagPlugin />
               <KeywordsPlugin />
               <SpeechToTextPlugin /> */}
@@ -188,7 +189,7 @@ export default function EditorComponent(): JSX.Element {
                   )}
                   <RichTextPlugin
                     contentEditable={
-                      <div className="min-h-96 max-w-full border-0 flex relative focus:outline-none outline-none z-0 resize-y">
+                      <div className="editor-container min-h-96 max-w-full border-0 flex  relative focus:outline-none outline-none z-0 resize-y">
                         <div className="flex-auto max-w-full relative resize-y -z-10" ref={onRef}>
                           <ContentEditable placeholder={placeholder} />
                         </div>
@@ -198,9 +199,11 @@ export default function EditorComponent(): JSX.Element {
                   />
                   <MarkdownShortcutPlugin />
                   {/* <CodeHighlightPlugin /> */}
-                  {/* <ListPlugin /> */}
-                  {/* <CheckListPlugin /> */}
-                  {/* <ListMaxIndentLevelPlugin maxDepth={7} /> */}
+                  <ListPlugin /> 
+                  <CheckListPlugin />
+                  <ListMaxIndentLevelPlugin maxDepth={7} />
+                  <TabFocusPlugin />
+                  <TabIndentationPlugin /> 
                   {/* <TablePlugin
                     hasCellMerge={tableCellMerge}
                     hasCellBackgroundColor={tableCellBackgroundColor}
@@ -217,9 +220,10 @@ export default function EditorComponent(): JSX.Element {
                   <ClickableLinkPlugin disabled={isEditable} />
                   <HorizontalRulePlugin />
                   <EquationsPlugin />
-                  <ExcalidrawPlugin />
-                  <TabFocusPlugin />
-                  <TabIndentationPlugin /> */}
+                
+  <ExcalidrawPlugin />
+             
+                  */}
                   {/* <CollapsiblePlugin />
                   <PageBreakPlugin />
                   <LayoutPlugin /> */}

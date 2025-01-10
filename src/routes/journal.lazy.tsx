@@ -15,6 +15,7 @@ import {
 } from "@/components/editor/context/SettingsContext";
 import PlaygroundNodes from "@/components/editor/nodes/PlaygroundNodes";
 import Settings from "@/components/editor/Settings";
+import lexicalTheme from "@/components/editor/themes/editor-theme";
 
 function $prepopulatedRichText() {
   const root = $getRoot();
@@ -40,6 +41,7 @@ function Journal() {
   const initialConfig = {
     editorState: $prepopulatedRichText,
     namespace: "KronosJournal",
+    theme: lexicalTheme,
     nodes: [...PlaygroundNodes],
     onError: (error: Error) => {
       console.error(error);
@@ -47,37 +49,37 @@ function Journal() {
   };
 
   // .editor-shell {
-  //   margin: 20px auto;
-  //   border-radius: 2px;
-  //   max-width: 1100px;
-  //   color: #000;
-  //   position: relative;
-  //   line-height: 1.7;
-  //   font-weight: 400;
-  // }
-  return (
-    <div className="p-2 border">
-      <FlashMessageContext>
-        <SettingsContext>
-          <LexicalComposer initialConfig={initialConfig}>
-            <SharedHistoryContext>
-              <TableContext>
-                <ToolbarContext>
-                  <div className="my-5 rounded max-w-[1100px] relative font-normal">
-                    <EditorComponent />
-                  </div>
-                  <Settings />
-                  {/* {isDevPlayground ? <DocsPlugin /> : null} */}
-                  {/* {isDevPlayground ? <PasteLogPlugin /> : null} */}
-                  {/* {isDevPlayground ? <TestRecorderPlugin /> : null} */}
-                  {/**/}
-                  {/* {measureTypingPerf ? <TypingPerfPlugin /> : null} */}
-                </ToolbarContext>
-              </TableContext>
-            </SharedHistoryContext>
-          </LexicalComposer>
-        </SettingsContext>
-      </FlashMessageContext>
-    </div>
-  );
+		//   margin: 20px auto;
+		//   border-radius: 2px;
+		//   max-width: 1100px;
+		//   color: #000;
+		//   position: relative;
+		//   line-height: 1.7;
+		//   font-weight: 400;
+		// }
+		return (
+			<div className="p-2 border">
+				<FlashMessageContext>
+					<SettingsContext>
+						<LexicalComposer initialConfig={initialConfig}>
+							<SharedHistoryContext>
+								<TableContext>
+									<ToolbarContext>
+										<div className="my-5 rounded max-w-[1100px] relative font-normal">
+											<EditorComponent />
+										</div>
+										<Settings />
+										{/* {isDevPlayground ? <DocsPlugin /> : null} */}
+										{/* {isDevPlayground ? <PasteLogPlugin /> : null} */}
+										{/* {isDevPlayground ? <TestRecorderPlugin /> : null} */}
+										{/**/}
+										{/* {measureTypingPerf ? <TypingPerfPlugin /> : null} */}
+									</ToolbarContext>
+								</TableContext>
+							</SharedHistoryContext>
+						</LexicalComposer>
+					</SettingsContext>
+				</FlashMessageContext>
+			</div>
+		);
 }
