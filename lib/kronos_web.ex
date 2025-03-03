@@ -90,6 +90,8 @@ defmodule KronosWeb do
       # Core UI components
       import KronosWeb.CoreComponents
 
+      import LiveReact
+
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 

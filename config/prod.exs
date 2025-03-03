@@ -18,3 +18,8 @@ config :logger, level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+
+config :live_react,
+  ssr_module: LiveReact.SSR.NodeJS,
+  # o
+  ssr: false

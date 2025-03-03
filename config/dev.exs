@@ -25,8 +25,7 @@ config :kronos, KronosWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "sYfZrAmN7ZlV8JtgJhwgyDPf2h3rcuS8bB7LEprDUfF8sYQS54fhWXZt/1iyXhaj",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:kronos, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:kronos, ~w(--watch)]}
+    bun: ["run", "dev", cd: Path.expand("../assets", __DIR__)]
   ]
 
 # ## SSL Support
@@ -55,10 +54,15 @@ config :kronos, KronosWeb.Endpoint,
 # Watch static and templates for browser reloading.
 config :kronos, KronosWeb.Endpoint,
   live_reload: [
+    notify: [
+      live_view: [
+        ~r"lib/kronos_web/core_components.ex$",
+        ~r"lib/kronos_web/(live|components)/.*(ex|heex)$"
+      ]
+    ],
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/kronos_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/kronos_web/controllers/.*(ex|heex)$"
     ]
   ]
 
@@ -83,3 +87,8 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :live_react,
+  vite_host: "http://localhost:5173",
+  ssr_module: LiveReact.SSR.ViteJS,
+  ssr: false

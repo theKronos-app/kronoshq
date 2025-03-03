@@ -41,8 +41,6 @@ defmodule Kronos.MixProject do
       {:phoenix_live_view, "~> 1.0.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.1.1",
@@ -57,7 +55,8 @@ defmodule Kronos.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:live_react, "~> 1.0.0-rc.3"}
     ]
   end
 
@@ -73,11 +72,12 @@ defmodule Kronos.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind kronos", "esbuild kronos"],
+      "assets.setup": ["cmd --cd assets bun install"],
+      "assets.build": [
+        "cmd --cd assets bun run build"
+      ],
       "assets.deploy": [
-        "tailwind kronos --minify",
-        "esbuild kronos --minify",
+        "cmd --cd assets bun run build",
         "phx.digest"
       ]
     ]

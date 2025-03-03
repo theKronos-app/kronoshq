@@ -1,5 +1,19 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss" source("../..");
 
-/* This file is for your main application CSS */
+@plugin 'tailwindcss-animate';
+
+@variant dark (&:where(.dark, .dark *));
+
+@variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+@variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+@variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+/* @plugin "./heroicons.tailwind.plugin.js"; */
+
+
+@source "../js/**/*.js";
+
+@source "../react-components/**/*.tsx"
+@source "../../lib/my_app_web.ex";
+@source "../../lib/my_app_web/**/*.*ex";
+
