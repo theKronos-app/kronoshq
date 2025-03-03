@@ -22,7 +22,7 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "topbar" // instead of ../vendor/topbar
 import { getHooks } from "live_react";
-import components from "../react-components";
+import components from "../react";
 import "../css/app.css"
 
 

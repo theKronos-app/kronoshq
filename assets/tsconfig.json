@@ -1,10 +1,16 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["dom", "dom.iterable", "ES2020"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "ES2020"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -21,10 +27,14 @@
     "noUnusedParameters": true,
     "incremental": true,
     "noFallthroughCasesInSwitch": true,
-
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./react/*"
+      ]
     }
   },
-  "include": ["js/*", "react/**/*"]
+  "include": [
+    "js/*",
+    "react/**/*"
+  ]
 }
