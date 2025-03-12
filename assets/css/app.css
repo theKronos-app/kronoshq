@@ -18,6 +18,8 @@
 @source "../../lib/my_app_web.ex";
 @source "../../lib/my_app_web/**/*.*ex";
 
+
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -136,4 +138,6 @@
     @apply bg-background text-foreground;
   }
 }
-
+.debug {
+  @apply border border-red-500;
+}
