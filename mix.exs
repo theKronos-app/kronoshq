@@ -57,7 +57,8 @@ defmodule Kronos.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:live_react, "~> 1.0.0-rc.3"}
+      {:live_react, "~> 1.0.0-rc.3"},
+      {:uniq, "~> 0.1"}
     ]
   end
 
