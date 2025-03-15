@@ -6,7 +6,7 @@ defmodule Kronos.Accounts do
   import Ecto.Query, warn: false
   alias Kronos.Repo
 
-  alias Kronos.Accounts.{User, UserToken, UserNotifier}
+  alias Kronos.Accounts.{User, UserToken, UserNotifier, Profile}
 
   ## Database getters
 
@@ -23,7 +23,9 @@ defmodule Kronos.Accounts do
 
   """
   def get_user_by_email(email) when is_binary(email) do
-    Repo.get_by(User, email: email)
+    User
+    |> Repo.get_by(email: email)
+    |> Repo.preload(:profile)
   end
 
   @doc """
@@ -41,7 +43,7 @@ defmodule Kronos.Accounts do
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
-    if User.valid_password?(user, password), do: user
+    if User.valid_password?(user, password), do: Repo.preload(user, :profile)
   end
 
   @doc """
@@ -58,7 +60,7 @@ defmodule Kronos.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id), do: Repo.get!(User, id) |> Repo.preload(:profile)
 
   ## User registration
 
@@ -78,6 +80,13 @@ defmodule Kronos.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, user} ->
+        # Create a default profile for the user
+        create_profile(user, %{})
+        {:ok, Repo.preload(user, :profile)}
+      error -> error
+    end
   end
 
   @doc """
@@ -349,5 +358,135 @@ defmodule Kronos.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  ## Profile management
+
+  @doc """
+  Returns the list of profiles.
+
+  ## Examples
+
+      iex> list_profiles()
+      [%Profile{}, ...]
+
+  """
+  def list_profiles do
+    Repo.all(Profile)
+  end
+
+  @doc """
+  Gets a single profile.
+
+  Raises `Ecto.NoResultsError` if the Profile does not exist.
+
+  ## Examples
+
+      iex> get_profile!(123)
+      %Profile{}
+
+      iex> get_profile!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_profile!(id), do: Repo.get!(Profile, id)
+
+  @doc """
+  Gets a profile by user_id.
+
+  ## Examples
+
+      iex> get_profile_by_user_id("user_abc123")
+      %Profile{}
+
+      iex> get_profile_by_user_id("user_nonexistent")
+      nil
+
+  """
+  def get_profile_by_user_id(user_id) do
+    Repo.get_by(Profile, user_id: user_id)
+  end
+
+  @doc """
+  Gets a user with their profile preloaded.
+
+  ## Examples
+
+      iex> get_user_with_profile("user_abc123")
+      %User{profile: %Profile{}}
+
+      iex> get_user_with_profile("user_nonexistent")
+      nil
+
+  """
+  def get_user_with_profile(id) do
+    User
+    |> Repo.get(id)
+    |> Repo.preload(:profile)
+  end
+
+  @doc """
+  Creates a profile for a user.
+
+  ## Examples
+
+      iex> create_profile(user, %{field: value})
+      {:ok, %Profile{}}
+
+      iex> create_profile(user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_profile(user, attrs) do
+    %Profile{}
+    |> Profile.changeset(Map.put(attrs, "user_id", user.id))
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a profile.
+
+  ## Examples
+
+      iex> update_profile(profile, %{field: new_value})
+      {:ok, %Profile{}}
+
+      iex> update_profile(profile, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_profile(profile, attrs) do
+    profile
+    |> Profile.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a profile.
+
+  ## Examples
+
+      iex> delete_profile(profile)
+      {:ok, %Profile{}}
+
+      iex> delete_profile(profile)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_profile(profile) do
+    Repo.delete(profile)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking profile changes.
+
+  ## Examples
+
+      iex> change_profile(profile)
+      %Ecto.Changeset{data: %Profile{}}
+
+  """
+  def change_profile(%Profile{} = profile, attrs \\ %{}) do
+    Profile.changeset(profile, attrs)
   end
 end
