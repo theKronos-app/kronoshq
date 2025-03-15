@@ -28,4 +28,28 @@ defmodule Kronos.AccountsFixtures do
     [_, token | _] = String.split(captured_email.text_body, "[TOKEN]")
     token
   end
+
+  def valid_profile_attributes(attrs \\ %{}) do
+    Enum.into(attrs, %{
+      "user_name" => "TestUser",
+      "avatar_url" => "https://example.com/avatar.jpg",
+      "settings" => %{"theme" => "dark", "notifications" => true}
+    })
+  end
+
+  # Note: This function is no longer needed since users automatically get a profile
+  # when they are created. Use Accounts.get_profile_by_user_id(user.id) instead.
+  def profile_fixture(user, attrs \\ %{}) do
+    # Delete any existing profile first to avoid conflicts
+    case Kronos.Accounts.get_profile_by_user_id(user.id) do
+      nil -> :ok
+      profile -> Kronos.Accounts.delete_profile(profile)
+    end
+    
+    attrs = valid_profile_attributes(attrs)
+    
+    {:ok, profile} = Kronos.Accounts.create_profile(user, attrs)
+    
+    profile
+  end
 end

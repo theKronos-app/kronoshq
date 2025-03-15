@@ -4,7 +4,7 @@ defmodule Kronos.AccountsTest do
   alias Kronos.Accounts
 
   import Kronos.AccountsFixtures
-  alias Kronos.Accounts.{User, UserToken}
+  alias Kronos.Accounts.{User, UserToken, Profile}
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do
@@ -497,6 +497,105 @@ defmodule Kronos.AccountsTest do
       _ = Accounts.generate_user_session_token(user)
       {:ok, _} = Accounts.reset_user_password(user, %{password: "new valid password"})
       refute Repo.get_by(UserToken, user_id: user.id)
+    end
+  end
+
+  describe "profiles" do
+    setup do
+      user = user_fixture()
+      # Get the automatically created profile instead of creating a new one
+      profile = Accounts.get_profile_by_user_id(user.id)
+      %{user: user, profile: profile}
+    end
+
+    test "list_profiles/0 returns all profiles", %{profile: profile} do
+      profiles = Accounts.list_profiles()
+      assert Enum.any?(profiles, fn p -> p.id == profile.id end)
+    end
+
+    test "get_profile!/1 returns the profile with given id", %{profile: profile} do
+      assert Accounts.get_profile!(profile.id) == profile
+    end
+
+    test "get_profile_by_user_id/1 returns the profile for a user", %{user: user, profile: profile} do
+      assert Accounts.get_profile_by_user_id(user.id) == profile
+    end
+
+    test "get_user_with_profile/1 returns user with preloaded profile", %{user: user, profile: profile} do
+      loaded_user = Accounts.get_user_with_profile(user.id)
+      assert loaded_user.id == user.id
+      assert loaded_user.profile.id == profile.id
+    end
+
+    test "create_profile/2 with valid data creates a profile", %{user: user} do
+      # First delete the existing profile
+      {:ok, _} = Accounts.delete_profile(Accounts.get_profile_by_user_id(user.id))
+      
+      valid_attrs = %{
+        "user_name" => "NewUser",
+        "avatar_url" => "https://example.com/new-avatar.jpg",
+        "settings" => %{"theme" => "light"}
+      }
+
+      assert {:ok, %Profile{} = profile} = Accounts.create_profile(user, valid_attrs)
+      assert profile.user_name == "NewUser"
+      assert profile.avatar_url == "https://example.com/new-avatar.jpg"
+      assert profile.settings == %{"theme" => "light"}
+      assert profile.user_id == user.id
+    end
+
+    test "create_profile/2 with invalid data returns error changeset", %{user: user} do
+      # First delete the existing profile
+      {:ok, _} = Accounts.delete_profile(Accounts.get_profile_by_user_id(user.id))
+      
+      # Testing with a user_name that's too long (over 50 chars)
+      invalid_attrs = %{
+        "user_name" => String.duplicate("a", 51),
+        "avatar_url" => "https://example.com/avatar.jpg"
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_profile(user, invalid_attrs)
+    end
+
+    test "update_profile/2 with valid data updates the profile", %{profile: profile} do
+      update_attrs = %{
+        "user_name" => "UpdatedName",
+        "avatar_url" => "https://example.com/updated-avatar.jpg",
+        "settings" => %{"theme" => "system"}
+      }
+
+      assert {:ok, %Profile{} = updated_profile} = Accounts.update_profile(profile, update_attrs)
+      assert updated_profile.user_name == "UpdatedName"
+      assert updated_profile.avatar_url == "https://example.com/updated-avatar.jpg"
+      assert updated_profile.settings == %{"theme" => "system"}
+    end
+
+    test "update_profile/2 with invalid data returns error changeset", %{profile: profile} do
+      # Testing with a user_name that's too long (over 50 chars)
+      invalid_attrs = %{"user_name" => String.duplicate("a", 51)}
+      
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_profile(profile, invalid_attrs)
+      assert profile == Accounts.get_profile!(profile.id)
+    end
+
+    test "delete_profile/1 deletes the profile", %{profile: profile} do
+      assert {:ok, %Profile{}} = Accounts.delete_profile(profile)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_profile!(profile.id) end
+    end
+
+    test "change_profile/1 returns a profile changeset", %{profile: profile} do
+      assert %Ecto.Changeset{} = Accounts.change_profile(profile)
+    end
+
+    test "register_user/1 creates a user with a default profile" do
+      email = unique_user_email()
+      password = valid_user_password()
+      
+      assert {:ok, %User{} = user} = Accounts.register_user(%{email: email, password: password})
+      assert user.email == email
+      assert is_nil(user.hashed_password) == false
+      assert is_nil(user.profile) == false
+      assert user.profile.user_id == user.id
     end
   end
 
